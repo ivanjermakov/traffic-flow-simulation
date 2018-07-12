@@ -1,12 +1,17 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation;
 
+import com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
+import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.*;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.*;
+import static processing.core.PConstants.CORNER;
 
 public class Field {
 	
@@ -48,6 +53,14 @@ public class Field {
 		return null;
 	}
 	
+	public void draw(PApplet p) {
+		IntStream.range(0, getHeight()).forEach(i -> {
+			IntStream.range(0, getWidth()).forEach(j -> {
+				getCell(i, j).draw(p);
+			});
+		});
+	}
+	
 	public static Cell getCell(List<List<Cell>> cells, int i, int j) {
 		try {
 			return cells.get(i).get(j);
@@ -61,8 +74,8 @@ public class Field {
 	public static Field createDefaultIntersection7x7() {
 		Field field = new Field(7, 7);
 		IntStream.range(0, 7).forEach(i -> {
-			Field.getCell(field.getCells(), i, 3).setCellType(ROAD);
-			Field.getCell(field.getCells(), 3, i).setCellType(ROAD);
+			Field.getCell(field.getCells(), i, 3).setCellType(ROAD).setRoadDirection(HORIZONTAL);
+			Field.getCell(field.getCells(), 3, i).setCellType(ROAD).setRoadDirection(VERTICAL);
 			Field.getCell(field.getCells(), 3, 3).setCellType(INTERSECTION);
 		});
 		

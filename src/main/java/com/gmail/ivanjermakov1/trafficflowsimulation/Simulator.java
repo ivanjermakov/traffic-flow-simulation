@@ -28,30 +28,7 @@ public class Simulator {
 	}
 	
 	public void draw(PApplet p) {
-		IntStream.range(0, field.getHeight()).forEach(i -> {
-			IntStream.range(0, field.getWidth()).forEach(j -> {
-				p.pushMatrix();
-				
-				p.rectMode(CORNER);
-				p.translate(i * CELL_SIZE, j * CELL_SIZE);
-				
-				switch (field.getCell(i, j).getCellType()) {
-					case GRASS:
-						p.fill(130, 240, 60);
-						break;
-					case ROAD:
-						p.fill(100, 100, 100);
-						break;
-					case INTERSECTION:
-						p.fill(70, 70, 70);
-						break;
-				}
-				
-				p.rect(0, 0, CELL_SIZE, CELL_SIZE);
-				
-				p.popMatrix();
-			});
-		});
+		field.draw(p);
 	}
 	
 	public void setFieldSize(int width, int height) {
