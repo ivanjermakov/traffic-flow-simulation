@@ -20,8 +20,6 @@ public class Main extends PApplet {
 	
 	public void setup() {
 //		surface.setResizable(true);
-		
-		simulator.init();
 	}
 	
 	public void draw() {
