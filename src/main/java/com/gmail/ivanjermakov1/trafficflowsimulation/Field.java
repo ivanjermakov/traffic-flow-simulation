@@ -1,6 +1,6 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
@@ -10,8 +10,8 @@ import java.util.stream.IntStream;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.*;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.*;
-import static processing.core.PConstants.CORNER;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.HORIZONTAL;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.VERTICAL;
 
 public class Field {
 	
@@ -59,6 +59,38 @@ public class Field {
 				getCell(i, j).draw(p);
 			});
 		});
+	}
+	
+	public Location getCarLocation(int i, int j, DrivingDirection drivingDirection, int... laneNumber) {
+		try {
+			if (cells.get(i).get(j).getCellType() != ROAD)
+				throw new IllegalStateException("Car must be places on the road.");
+		} catch (NullPointerException e) {
+			throw new IndexOutOfBoundsException("Cell is out of range.");
+		}
+		
+		int laneWidth = (CELL_SIZE / 2) / getCell(i, j).getLaneCount();
+		int laneOffset = 0;
+		if (laneNumber.length == 1 && laneNumber[0] > 0 && laneNumber[0] <= getCell(i, j).getLaneCount()) {
+			laneOffset = laneNumber[0] * laneWidth;
+		} else {
+			switch (drivingDirection) {
+				case TOP:
+					return new Location(i * CELL_SIZE + CELL_SIZE / 2 + laneWidth / 2 + laneOffset,
+							j * CELL_SIZE + CELL_SIZE / 2);
+				case DOWN:
+					return new Location(i * CELL_SIZE + CELL_SIZE / 2 - laneWidth / 2 - laneOffset,
+							j * CELL_SIZE + CELL_SIZE / 2);
+				case LEFT:
+					return new Location(i * CELL_SIZE + CELL_SIZE / 2,
+							j * CELL_SIZE + CELL_SIZE / 2 - laneWidth / 2 - laneOffset);
+				case RIGHT:
+					return new Location(i * CELL_SIZE + CELL_SIZE / 2,
+							j * CELL_SIZE + CELL_SIZE / 2 + laneWidth / 2 + laneOffset);
+			}
+		}
+		
+		return null;
 	}
 	
 	public static Cell getCell(List<List<Cell>> cells, int i, int j) {

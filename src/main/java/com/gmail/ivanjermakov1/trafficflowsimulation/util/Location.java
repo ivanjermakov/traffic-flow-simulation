@@ -29,4 +29,8 @@ public class Location {
 		this.y = y;
 	}
 	
+	public void add(Vector speed) {
+		x += speed.getX();
+		y += speed.getY();
+	}
 }

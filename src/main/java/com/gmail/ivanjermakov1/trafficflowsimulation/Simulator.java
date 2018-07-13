@@ -1,5 +1,6 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation;
 
+import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -28,10 +29,13 @@ public class Simulator {
 	
 	public void init() {
 		if (field == null) field = new Field(7, 7);
+		cars.add(new Car(DrivingDirection.TOP, field.getCarLocation(3, 6, DrivingDirection.TOP)));
 	}
 	
 	public void draw(PApplet p) {
 		field.draw(p);
+		cars.forEach(car -> car.update());
+		cars.forEach(car -> car.draw(p));
 	}
 	
 	public void setFieldSize(int width, int height) {

@@ -18,9 +18,17 @@ public class Cell {
 	private RoadDirection roadDirection;
 	private Location location;
 	
+	private int laneCount = 1; //count of lanes in one direction. 1 by default.
+	
 	public Cell(CellType cellType, Location location) {
 		this.cellType = cellType;
 		this.location = location;
+	}
+	
+	public Cell(CellType cellType, Location location, int laneCount) {
+		this.cellType = cellType;
+		this.location = location;
+		this.laneCount = laneCount;
 	}
 	
 	public CellType getCellType() {
@@ -29,6 +37,10 @@ public class Cell {
 	
 	public Location getLocation() {
 		return location;
+	}
+	
+	public int getLaneCount() {
+		return laneCount;
 	}
 	
 	public Cell setCellType(CellType cellType) {
