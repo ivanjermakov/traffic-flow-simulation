@@ -7,6 +7,7 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.*;
@@ -106,11 +107,49 @@ public class Field {
 	public static Field createDefaultIntersection7x7() {
 		Field field = new Field(7, 7);
 		IntStream.range(0, 7).forEach(i -> {
-			Field.getCell(field.getCells(), i, 3).setCellType(ROAD).setRoadDirection(HORIZONTAL);
-			Field.getCell(field.getCells(), 3, i).setCellType(ROAD).setRoadDirection(VERTICAL);
-			Field.getCell(field.getCells(), 3, 3).setCellType(INTERSECTION);
+			field.getCell(i, 3).setCellType(ROAD);
+			field.getCell(3, i).setCellType(ROAD);
 		});
 		
+		field.setCellsProperties();
 		return field;
 	}
+	
+	private void setCellsProperties() {
+		IntStream.range(0, width)
+				.forEach(i -> {
+					IntStream.range(0, height)
+							.forEach(j -> {
+								Cell cell = getCell(i, j);
+								Cell top = getCell((i - 1 + height) % height, j);
+								Cell down = getCell((i + 1) % height, j);
+								Cell left = getCell(i, (j - 1 + width) % width);
+								Cell right = getCell(i, (j + 1) % width);
+								if (cell.getCellType() != GRASS) {
+									if (top.getCellType() != GRASS && down.getCellType() != GRASS) {
+										cell.setRoadDirection(VERTICAL);
+									}
+									if (left.getCellType() != GRASS && right.getCellType() != GRASS) {
+										cell.setRoadDirection(HORIZONTAL);
+									}
+									if (getConnectionsCount(top, down, right, left) == 3) {
+										if (top.getCellType() != ROAD) cell.setCellType(INTERSECTION_WITHOUT_TOP);
+										if (down.getCellType() != ROAD) cell.setCellType(INTERSECTION_WITHOUT_DOWN);
+										if (left.getCellType() != ROAD) cell.setCellType(INTERSECTION_WITHOUT_LEFT);
+										if (right.getCellType() != ROAD) cell.setCellType(INTERSECTION_WITHOUT_RIGHT);
+									}
+									if (getConnectionsCount(top, down, right, left) == 4) {
+										cell.setCellType(INTERSECTION);
+									}
+								}
+							});
+				});
+	}
+	
+	private static int getConnectionsCount(Cell top, Cell down, Cell right, Cell left) {
+		return (int) Stream.of(top, down, right, left)
+				.filter(cell -> cell.getCellType() != GRASS)
+				.count();
+	}
+	
 }

@@ -69,7 +69,6 @@ public class Vector {
 	}
 	
 	public void limit(double limit) {
-		System.out.println("was x: " + x + ", y: " + y + ", l: " + length);
 		if (length <= limit) return;
 		
 		double k = length / limit;
@@ -77,6 +76,6 @@ public class Vector {
 		y /= k;
 		
 		length = limit;
-		System.out.println("become x: " + x + ", y: " + y + ", l: " + length);
 	}
+	
 }

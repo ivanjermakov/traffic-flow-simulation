@@ -74,4 +74,5 @@ public class Car {
 		speed.limit(MAX_SPEED);
 		location.add(speed);
 	}
+	
 }

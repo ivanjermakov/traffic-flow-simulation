@@ -78,11 +78,11 @@ public class Cell {
 			p.noStroke();
 			p.translate(CELL_SIZE / 2, CELL_SIZE / 2);
 			switch (roadDirection) {
-				case VERTICAL:
+				case HORIZONTAL:
 					p.rect(-4, 0, CELL_SIZE / 32, CELL_SIZE);
 					p.rect(4, 0, CELL_SIZE / 32, CELL_SIZE);
 					break;
-				case HORIZONTAL:
+				case VERTICAL:
 					p.rect(0, -4, CELL_SIZE, CELL_SIZE / 32);
 					p.rect(0, 4, CELL_SIZE, CELL_SIZE / 32);
 					break;
