@@ -34,8 +34,6 @@ public class Rotation {
 			case RIGHT:
 				anchorLocation = new Location(this.startLocation.getX(), this.endLocation.getY());
 				break;
-			case TURN_AROUND:
-				break;
 		}
 		
 		switch (drivingDirection) {

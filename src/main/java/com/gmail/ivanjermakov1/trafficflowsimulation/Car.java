@@ -1,12 +1,14 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation;
 
 import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Vector;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.color.Colors;
 import processing.core.PApplet;
 
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
 import static java.lang.Math.PI;
@@ -23,6 +25,7 @@ public class Car {
 	private Colors color = Colors.values()[new Random().nextInt(Colors.values().length)];
 	
 	private DrivingDirection drivingDirection;
+	private List<RotationDirection> priorityTurns;
 	
 	private Location location;
 	private Vector speed = new Vector();
@@ -55,6 +58,7 @@ public class Car {
 				break;
 		}
 		
+		priorityTurns = generatePriorityTurns();
 	}
 	
 	public void draw(PApplet p) {
@@ -75,4 +79,9 @@ public class Car {
 		location.add(speed);
 	}
 	
+	private static List<RotationDirection> generatePriorityTurns() {
+		List<RotationDirection> list = new ArrayList<>(Arrays.asList(RotationDirection.values()));
+		Collections.shuffle(list);
+		return list;
+	}
 }

@@ -34,7 +34,7 @@ public class Simulator {
 	
 	public void draw(PApplet p) {
 		field.draw(p);
-		cars.forEach(car -> car.update());
+		cars.forEach(Car::update);
 		cars.forEach(car -> car.draw(p));
 	}
 	

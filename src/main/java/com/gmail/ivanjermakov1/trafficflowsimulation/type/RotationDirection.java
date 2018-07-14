@@ -1,7 +1,9 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.type;
 
 public enum RotationDirection {
+	STRAIGHT,
 	LEFT,
 	RIGHT,
-	TURN_AROUND
+	//TODO: include turn around
+//	TURN_AROUND
 }
