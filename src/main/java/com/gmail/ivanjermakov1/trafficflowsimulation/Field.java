@@ -94,6 +94,10 @@ public class Field {
 		return null;
 	}
 	
+	public Location getCellLocation(Location location) {
+		return new Location(location.getX() / CELL_SIZE, location.getY() / CELL_SIZE);
+	}
+	
 	public static Cell getCell(List<List<Cell>> cells, int i, int j) {
 		try {
 			return cells.get(i).get(j);

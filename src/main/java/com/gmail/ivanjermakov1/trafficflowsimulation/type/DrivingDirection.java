@@ -4,5 +4,5 @@ public enum DrivingDirection {
 	TOP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
 }

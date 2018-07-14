@@ -20,6 +20,7 @@ public class Cell {
 	
 	private int laneCount = 1; //count of lanes in one direction. 1 by default.
 	
+	
 	public Cell(CellType cellType, Location location) {
 		this.cellType = cellType;
 		this.location = location;

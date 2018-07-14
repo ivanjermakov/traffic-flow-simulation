@@ -4,7 +4,8 @@ import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 
 public class Rotation {
 	

@@ -5,7 +5,9 @@ public class Location {
 	private int x;
 	private int y;
 	
-	public Location() {
+	
+	public boolean equals(Location location) {
+			return x == location.x && y == location.y;
 	}
 	
 	public Location(int x, int y) {

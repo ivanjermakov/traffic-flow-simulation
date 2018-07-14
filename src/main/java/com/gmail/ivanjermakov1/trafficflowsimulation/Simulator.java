@@ -5,19 +5,12 @@ import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
-
-import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
-import static processing.core.PConstants.CORNER;
 
 public class Simulator {
 	
 	private Field field;
 	private List<Car> cars = new ArrayList<>();
 	
-	
-	public Simulator() {
-	}
 	
 	public Simulator(Field field) {
 		this.field = field;
@@ -34,11 +27,14 @@ public class Simulator {
 	
 	public void draw(PApplet p) {
 		field.draw(p);
+		cars.forEach(car -> car.setNextCellLocation(field));
 		cars.forEach(Car::update);
 		cars.forEach(car -> car.draw(p));
+		cars.forEach(car -> car.checkBounds(field));
 	}
 	
 	public void setFieldSize(int width, int height) {
 		field = new Field(width, height);
 	}
+	
 }
