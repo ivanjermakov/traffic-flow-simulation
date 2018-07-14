@@ -1,5 +1,7 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.util;
 
+import static java.lang.Math.*;
+
 public class Location {
 	
 	private int x;
@@ -35,4 +37,9 @@ public class Location {
 		x += speed.getX();
 		y += speed.getY();
 	}
+	
+	public static double distance(Location location1, Location location2) {
+		return sqrt(pow(location1.getX() - location2.getX(), 2) + pow(location1.getY() - location2.getY(), 2));
+	}
+	
 }

@@ -20,6 +20,7 @@ public class Car {
 	private static final int WIDTH = CELL_SIZE / 8;
 	
 	private static final double ACCELERATION = 2;
+	private static final double DECELERATION = 6;
 	
 	private Colors color = Colors.values()[new Random().nextInt(Colors.values().length)];
 	
@@ -121,7 +122,6 @@ public class Car {
 			location.setX(field.getWidth() * CELL_SIZE);
 		}
 		if (location.getY() <= 0) {
-			System.out.println(field.getHeight());
 			location.setY(field.getHeight() * CELL_SIZE);
 		}
 		if (location.getX() > field.getWidth() * CELL_SIZE) {
@@ -130,6 +130,20 @@ public class Car {
 		if (location.getY() > field.getHeight() * CELL_SIZE) {
 			location.setY(0);
 		}
+	}
+	
+	public void detectObstacle(Field field, List<Car> cars) {
+		for (Car car : cars) {
+			if (car == this) continue;
+			if (Location.distance(location, car.location) < Car.LENGTH * 2) {
+				brake();
+			}
+		}
+	}
+	
+	private void brake() {
+		speed.add(-DECELERATION);
+		System.out.println(speed.getLength());
 	}
 	
 	private static List<RotationDirection> generatePriorityTurns() {

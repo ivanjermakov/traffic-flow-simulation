@@ -78,4 +78,14 @@ public class Vector {
 		length = limit;
 	}
 	
+	public void add(double summand) {
+		double newLength = length += summand;
+		if (newLength < 0) newLength = 0;
+		
+		double k = length * newLength;
+		x *= k;
+		y *= k;
+		
+		length = newLength;
+	}
 }
