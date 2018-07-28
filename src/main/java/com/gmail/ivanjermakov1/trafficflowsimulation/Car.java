@@ -10,17 +10,18 @@ import processing.core.PApplet;
 import java.util.*;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
-import static java.lang.Math.PI;
+import static java.lang.Math.*;
+import static processing.core.PConstants.CENTER;
 
 public class Car {
 	
-	private static final double MAX_SPEED = 4;
+	private static final double MAX_SPEED = 3;
 	
 	private static final int LENGTH = CELL_SIZE / 4;
 	private static final int WIDTH = CELL_SIZE / 8;
 	
-	private static final double ACCELERATION = 2;
-	private static final double DECELERATION = 6;
+	private static final double ACCELERATION = 0.1;
+	private static final double DECELERATION = 0.4;
 	
 	private Colors color = Colors.values()[new Random().nextInt(Colors.values().length)];
 	
@@ -31,6 +32,8 @@ public class Car {
 	private Vector speed = new Vector();
 	private Vector acceleration;
 	private double direction;
+	
+	private boolean isBraking = false;
 	
 	private int travelled = 0;
 	
@@ -64,23 +67,36 @@ public class Car {
 		priorityTurns = generatePriorityTurns();
 	}
 	
+	public Vector getSpeed() {
+		return speed;
+	}
+	
 	public void draw(PApplet p) {
 		p.pushMatrix();
 		
 		p.fill(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue());
 		p.noStroke();
-		p.translate(location.getX(), location.getY());
+		p.translate((int) location.getX(), (int) location.getY());
 		p.rotate((float) direction);
+		p.rectMode(CENTER);
 		p.rect(0, 0, WIDTH, LENGTH);
-		
+		p.fill(255, 0, 0, 100);
 		p.popMatrix();
+		
+		//test
+		p.fill(255, 0, 0, 100);
+		p.ellipse((int) getHoodLocation(location).getX(), (int) getHoodLocation(location).getY(), LENGTH, LENGTH);
+		p.ellipse((int) getBodyLocation(location).getX(), (int) getBodyLocation(location).getY(), LENGTH, LENGTH);
 	}
 	
 	public void update() {
-		//movement
-		speed.add(acceleration);
-		speed.limit(MAX_SPEED);
 		location.add(speed);
+		
+		if (isBraking) {
+			brake();
+		} else {
+			accelerate();
+		}
 		
 		//travelled distance update
 		travelled += speed.getLength();
@@ -98,20 +114,20 @@ public class Car {
 			//get next cell based on direction
 			switch (drivingDirection) {
 				case TOP:
-					nextCellLocation = new Location(cellLocation.getX(),
-							(cellLocation.getY() - 1 + field.getHeight()) % field.getHeight());
+					nextCellLocation = new Location((int) cellLocation.getX(),
+							((int) cellLocation.getY() - 1 + field.getHeight()) % field.getHeight());
 					break;
 				case RIGHT:
-					nextCellLocation = new Location((cellLocation.getX() + 1 + field.getWidth()) % field.getWidth(),
-							cellLocation.getY());
+					nextCellLocation = new Location((int) (cellLocation.getX() + 1 + field.getWidth()) % field.getWidth(),
+							(int) cellLocation.getY());
 					break;
 				case DOWN:
-					nextCellLocation = new Location(cellLocation.getX(),
-							(cellLocation.getY() + 1 + field.getHeight()) % field.getHeight());
+					nextCellLocation = new Location((int) cellLocation.getX(),
+							(int) (cellLocation.getY() + 1 + field.getHeight()) % field.getHeight());
 					break;
 				case LEFT:
-					nextCellLocation = new Location((cellLocation.getX() - 1 + field.getWidth()) % field.getWidth(),
-							cellLocation.getY());
+					nextCellLocation = new Location((int) (cellLocation.getX() - 1 + field.getWidth()) % field.getWidth(),
+							(int) cellLocation.getY());
 					break;
 			}
 		}
@@ -132,18 +148,60 @@ public class Car {
 		}
 	}
 	
-	public void detectObstacle(Field field, List<Car> cars) {
+	public void detectSideObstacle(List<Car> cars) {
 		for (Car car : cars) {
-			if (car == this) continue;
-			if (Location.distance(location, car.location) < Car.LENGTH * 2) {
-				brake();
+			if (car != this) {
+				if (Location.distance(getHoodLocation(location), getBodyLocation(car.location)) <= LENGTH) {
+					isBraking = true;
+					return;
+				}
 			}
 		}
+		isBraking = false;
+	}
+	
+	public void detectForwardObstacle(List<Car> cars) {
+		for (Car car : cars) {
+			if (car != this) {
+				if (Location.distance(getHoodLocation(location), getHoodLocation(car.location)) <= LENGTH) {
+					isBraking = true;
+					return;
+				}
+			}
+		}
+		isBraking = false;
+	}
+	
+	public void detectBodyObstacle(List<Car> cars) {
+		for (Car car : cars) {
+			if (car != this) {
+				if (Location.distance(getBodyLocation(location), getBodyLocation(car.location)) <= LENGTH) {
+					isBraking = true;
+					return;
+				}
+			}
+		}
+		isBraking = false;
 	}
 	
 	private void brake() {
-		speed.add(-DECELERATION);
-		System.out.println(speed.getLength());
+		isBraking = true;
+		speed.sub(DECELERATION);
+	}
+	
+	private void accelerate() {
+		isBraking = false;
+		speed.add(acceleration);
+		speed.limit(MAX_SPEED);
+	}
+	
+	private Location getHoodLocation(Location location) {
+		return new Location((int) location.getX() + (int) (sin(direction) * LENGTH),
+				(int) location.getY() - (int) (cos(direction) * LENGTH));
+	}
+	
+	private Location getBodyLocation(Location location) {
+		return new Location((int) location.getX(), (int) location.getY());
 	}
 	
 	private static List<RotationDirection> generatePriorityTurns() {

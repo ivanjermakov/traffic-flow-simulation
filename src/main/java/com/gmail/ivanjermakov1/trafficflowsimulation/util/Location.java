@@ -1,15 +1,16 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.util;
 
-import static java.lang.Math.*;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class Location {
 	
-	private int x;
-	private int y;
+	private double x;
+	private double y;
 	
 	
 	public boolean equals(Location location) {
-			return x == location.x && y == location.y;
+		return x == location.x && y == location.y;
 	}
 	
 	public Location(int x, int y) {
@@ -17,7 +18,7 @@ public class Location {
 		this.y = y;
 	}
 	
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 	
@@ -25,7 +26,7 @@ public class Location {
 		this.x = x;
 	}
 	
-	public int getY() {
+	public double getY() {
 		return y;
 	}
 	
@@ -34,8 +35,8 @@ public class Location {
 	}
 	
 	public void add(Vector speed) {
-		x += speed.getX();
-		y += speed.getY();
+			x += speed.getX();
+			y += speed.getY();
 	}
 	
 	public static double distance(Location location1, Location location2) {

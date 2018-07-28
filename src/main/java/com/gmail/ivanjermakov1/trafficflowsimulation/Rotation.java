@@ -30,23 +30,23 @@ public class Rotation {
 		
 		switch (this.rotationDirection) {
 			case LEFT:
-				anchorLocation = new Location(this.startLocation.getY(), this.endLocation.getX());
+				anchorLocation = new Location((int) this.startLocation.getY(), (int) this.endLocation.getX());
 				break;
 			case RIGHT:
-				anchorLocation = new Location(this.startLocation.getX(), this.endLocation.getY());
+				anchorLocation = new Location((int) this.startLocation.getX(), (int) this.endLocation.getY());
 				break;
 		}
 		
 		switch (drivingDirection) {
 			case TOP:
 			case DOWN:
-				startRadius = abs(anchorLocation.getX() - startLocation.getX());
-				endRadius = abs(anchorLocation.getX() - endLocation.getX());
+				startRadius = abs((int) anchorLocation.getX() - (int) startLocation.getX());
+				endRadius = abs((int) anchorLocation.getX() - (int) endLocation.getX());
 				break;
 			case LEFT:
 			case RIGHT:
-				startRadius = abs(anchorLocation.getY() - startLocation.getY());
-				endRadius = abs(anchorLocation.getY() - endLocation.getY());
+				startRadius = abs((int) anchorLocation.getY() - (int) startLocation.getY());
+				endRadius = abs((int) anchorLocation.getY() - (int) endLocation.getY());
 				break;
 		}
 		

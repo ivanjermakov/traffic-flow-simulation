@@ -32,10 +32,6 @@ public class Field {
 				});
 	}
 	
-	public List<List<Cell>> getCells() {
-		return cells;
-	}
-	
 	public int getWidth() {
 		return width;
 	}
@@ -95,7 +91,7 @@ public class Field {
 	}
 	
 	public Location getCellLocation(Location location) {
-		return new Location(location.getX() / CELL_SIZE, location.getY() / CELL_SIZE);
+		return new Location((int) location.getX() / CELL_SIZE, (int) location.getY() / CELL_SIZE);
 	}
 	
 	public static Cell getCell(List<List<Cell>> cells, int i, int j) {

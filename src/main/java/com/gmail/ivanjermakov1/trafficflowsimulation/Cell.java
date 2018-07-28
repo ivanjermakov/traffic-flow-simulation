@@ -59,7 +59,7 @@ public class Cell {
 		
 		p.noStroke();
 		p.rectMode(CORNER);
-		p.translate(location.getX() * CELL_SIZE, location.getY() * CELL_SIZE);
+		p.translate((int) location.getX() * CELL_SIZE, (int) location.getY() * CELL_SIZE);
 		
 		switch (cellType) {
 			case GRASS:

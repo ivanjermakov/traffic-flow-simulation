@@ -4,6 +4,8 @@ import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
 
 public class Vector {
 	
+	private static final double MIN_VALUE = 0.001;
+	
 	private double x;
 	private double y;
 	
@@ -78,14 +80,20 @@ public class Vector {
 		length = limit;
 	}
 	
-	public void add(double summand) {
-		double newLength = length += summand;
-		if (newLength < 0) newLength = 0;
+	public void sub(double substitute) {
+		double newLength = length - substitute;
+		if (newLength < MIN_VALUE) newLength = 0;
+		if (length == 0) {
+			x = 0;
+			y = 0;
+			return;
+		}
 		
-		double k = length * newLength;
+		double k = newLength / length;
 		x *= k;
 		y *= k;
 		
 		length = newLength;
 	}
+	
 }
