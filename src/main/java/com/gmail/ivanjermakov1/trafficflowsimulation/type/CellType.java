@@ -3,6 +3,8 @@ package com.gmail.ivanjermakov1.trafficflowsimulation.type;
 public enum CellType {
 	GRASS,
 	ROAD,
+	LEFT_TURN,
+	RIGHT_TURN,
 	INTERSECTION,
 	INTERSECTION_WITHOUT_TOP,
 	INTERSECTION_WITHOUT_DOWN,

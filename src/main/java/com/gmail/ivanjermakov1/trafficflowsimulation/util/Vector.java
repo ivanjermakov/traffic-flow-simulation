@@ -12,6 +12,7 @@ public class Vector {
 	private double length;
 	private double direction;
 	
+	
 	public static Vector createVector(DrivingDirection drivingDirection, double coefficient) {
 		switch (drivingDirection) {
 			case TOP:

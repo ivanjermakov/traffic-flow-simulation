@@ -23,18 +23,18 @@ public class Simulator {
 	
 	public void init() {
 		if (field == null) field = new Field(7, 7);
-		cars.add(new Car(TOP, field.getCarLocation(3, 6, TOP)));
+		cars.add(new Car(TOP, field.getCarLocation(3, 5, TOP)));
 		cars.add(new Car(DOWN, field.getCarLocation(3, 0, DOWN)));
-//		cars.add(new Car(DOWN, field.getCarLocation(3, 1, TOP)));
-		cars.add(new Car(RIGHT, field.getCarLocation(1, 3, RIGHT)));
-		cars.add(new Car(TOP, field.getCarLocation(3, 0, TOP)));
+		cars.add(new Car(RIGHT, field.getCarLocation(2, 3, RIGHT)));
+		cars.add(new Car(LEFT, field.getCarLocation(5, 3, LEFT)));
 	}
 	
 	public void draw(PApplet p) {
 		field.draw(p);
 		cars.forEach(car -> {
 			car.checkBounds(field);
-			car.setNextCellLocation(field);
+//			car.setNextCellLocation(field);
+			car.checkRotation(field);
 			car.detectBodyObstacle(cars);
 			car.detectForwardObstacle(cars);
 			car.detectSideObstacle(cars);

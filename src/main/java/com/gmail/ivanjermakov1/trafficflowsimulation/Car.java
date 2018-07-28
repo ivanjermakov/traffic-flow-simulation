@@ -7,15 +7,18 @@ import com.gmail.ivanjermakov1.trafficflowsimulation.util.Vector;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.color.Colors;
 import processing.core.PApplet;
 
-import java.util.*;
+import java.util.List;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.GRASS;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.ROAD;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection.STRAIGHT;
 import static java.lang.Math.*;
 import static processing.core.PConstants.CENTER;
 
 public class Car {
 	
-	private static final double MAX_SPEED = 3;
+	private static final double MAX_SPEED = 4;
 	
 	private static final int LENGTH = CELL_SIZE / 4;
 	private static final int WIDTH = CELL_SIZE / 8;
@@ -23,7 +26,7 @@ public class Car {
 	private static final double ACCELERATION = 0.1;
 	private static final double DECELERATION = 0.4;
 	
-	private Colors color = Colors.values()[new Random().nextInt(Colors.values().length)];
+	private Colors color = Colors.getRandom();
 	
 	private DrivingDirection drivingDirection;
 	private List<RotationDirection> priorityTurns;
@@ -37,11 +40,12 @@ public class Car {
 	
 	private int travelled = 0;
 	
-	private Location nextCellLocation;
-	private boolean isCellChanged = false;
+	private Cell cell;
 	
 	private boolean isRotating = false;
+	private boolean isCompleteRotation = true;
 	private Rotation rotation;
+	
 	
 	public Car(DrivingDirection drivingDirection, Location location) {
 		this.drivingDirection = drivingDirection;
@@ -49,26 +53,11 @@ public class Car {
 		
 		acceleration = Vector.createVector(drivingDirection, ACCELERATION);
 		
-		switch (drivingDirection) {
-			case TOP:
-				direction = 0;
-				break;
-			case RIGHT:
-				direction = PI / 2;
-				break;
-			case DOWN:
-				direction = PI;
-				break;
-			case LEFT:
-				direction = 3 * PI / 2;
-				break;
-		}
-		
-		priorityTurns = generatePriorityTurns();
-	}
-	
-	public Vector getSpeed() {
-		return speed;
+		direction = setDirection(drivingDirection);
+
+//		priorityTurns = Arrays.asList(LEFT, RIGHT, STRAIGHT);
+//		priorityTurns  = Arrays.asList(RIGHT, RIGHT, STRAIGHT);
+//		priorityTurns = generatePriorityTurns();
 	}
 	
 	public void draw(PApplet p) {
@@ -81,16 +70,47 @@ public class Car {
 		p.rectMode(CENTER);
 		p.rect(0, 0, WIDTH, LENGTH);
 		p.fill(255, 0, 0, 100);
+		
 		p.popMatrix();
 		
 		//test
 		p.fill(255, 0, 0, 100);
 		p.ellipse((int) getHoodLocation(location).getX(), (int) getHoodLocation(location).getY(), LENGTH, LENGTH);
 		p.ellipse((int) getBodyLocation(location).getX(), (int) getBodyLocation(location).getY(), LENGTH, LENGTH);
+		
+		if (isRotating) {
+			p.fill(0, 0, 255);
+			p.ellipse((float) rotation.getEndLocation().getX(), (float) rotation.getEndLocation().getY(), 10, 10);
+			p.ellipse((float) rotation.getStartLocation().getX(), (float) rotation.getStartLocation().getY(), 10, 10);
+			p.fill(255, 0, 0);
+			p.ellipse((float) rotation.getAnchorLocation().getX(), (float) rotation.getAnchorLocation().getY(), 10, 10);
+			p.fill(0);
+			p.ellipse((float) location.getX(), (float) location.getY(), 10, 10);
+			p.fill(255);
+			if (rotation.getPreviousLocation() != null) {
+				p.ellipse((float) rotation.getPreviousLocation().getX(), (float) rotation.getPreviousLocation().getY(), 10, 10);
+			}
+		}
 	}
 	
 	public void update() {
-		location.add(speed);
+		if (!isRotating) {
+			location.add(speed);
+		} else {
+			Location newLocation = rotation.getNewLocation(travelled);
+			if (newLocation == null) {
+				//rotation is finished
+				isRotating = false;
+				location = rotation.getEndLocation();
+				drivingDirection = rotation.getDrivingDirection();
+				direction = setDirection(drivingDirection);
+				acceleration = Vector.createVector(drivingDirection, speed.getLength());
+				rotation = null;
+			} else {
+				location = newLocation;
+				direction = rotation.getNewDirection(direction);
+			}
+		}
 		
 		if (isBraking) {
 			brake();
@@ -100,37 +120,6 @@ public class Car {
 		
 		//travelled distance update
 		travelled += speed.getLength();
-	}
-	
-	public void setNextCellLocation(Field field) {
-		if (!isRotating) {
-			//get current cell
-			Location cellLocation = field.getCellLocation(location);
-			if (nextCellLocation != null) {
-				isCellChanged = !cellLocation.equals(nextCellLocation);
-			} else {
-				isCellChanged = false;
-			}
-			//get next cell based on direction
-			switch (drivingDirection) {
-				case TOP:
-					nextCellLocation = new Location((int) cellLocation.getX(),
-							((int) cellLocation.getY() - 1 + field.getHeight()) % field.getHeight());
-					break;
-				case RIGHT:
-					nextCellLocation = new Location((int) (cellLocation.getX() + 1 + field.getWidth()) % field.getWidth(),
-							(int) cellLocation.getY());
-					break;
-				case DOWN:
-					nextCellLocation = new Location((int) cellLocation.getX(),
-							(int) (cellLocation.getY() + 1 + field.getHeight()) % field.getHeight());
-					break;
-				case LEFT:
-					nextCellLocation = new Location((int) (cellLocation.getX() - 1 + field.getWidth()) % field.getWidth(),
-							(int) cellLocation.getY());
-					break;
-			}
-		}
 	}
 	
 	public void checkBounds(Field field) {
@@ -184,6 +173,28 @@ public class Car {
 		isBraking = false;
 	}
 	
+	public void checkRotation(Field field) {
+		Cell currentCell = field.getCell(location);
+		if (currentCell.getCellType() == ROAD) isCompleteRotation = true;
+		
+		if (isRotating || !isCompleteRotation) return;
+		
+		if (currentCell.getCellType() != GRASS && currentCell.getCellType() != ROAD) {
+			priorityTurns = RotationDirection.generatePriorityTurns();
+			RotationDirection rotationDirection = Rotation.predictRotationDirection(currentCell.getCellType(), priorityTurns);
+			
+			if (rotationDirection == STRAIGHT) {
+				isCompleteRotation = false;
+				return;
+			};
+			
+			isCompleteRotation = false;
+			isRotating = true;
+			rotation = new Rotation(drivingDirection, rotationDirection, location,
+					Rotation.getEndLocation(field, location, drivingDirection, rotationDirection), travelled);
+		}
+	}
+	
 	private void brake() {
 		isBraking = true;
 		speed.sub(DECELERATION);
@@ -204,10 +215,18 @@ public class Car {
 		return new Location((int) location.getX(), (int) location.getY());
 	}
 	
-	private static List<RotationDirection> generatePriorityTurns() {
-		List<RotationDirection> list = new ArrayList<>(Arrays.asList(RotationDirection.values()));
-		Collections.shuffle(list);
-		return list;
+	private double setDirection(DrivingDirection drivingDirection) {
+		switch (drivingDirection) {
+			case TOP:
+				return  0;
+			case RIGHT:
+				return PI / 2;
+			case DOWN:
+				return PI;
+			case LEFT:
+				return 3 * PI / 2;
+		}
+		throw new IllegalStateException();
 	}
 	
 }

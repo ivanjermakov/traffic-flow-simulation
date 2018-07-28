@@ -50,6 +50,13 @@ public class Field {
 		return null;
 	}
 	
+	public Cell getCell(Location location) {
+		int i = (int) (location.getX() / CELL_SIZE);
+		int j = (int) (location.getY() / CELL_SIZE);
+		
+		return getCell(i % width, j % height);
+	}
+	
 	public void draw(PApplet p) {
 		IntStream.range(0, getHeight()).forEach(i -> {
 			IntStream.range(0, getWidth()).forEach(j -> {
@@ -59,13 +66,6 @@ public class Field {
 	}
 	
 	public Location getCarLocation(int i, int j, DrivingDirection drivingDirection, int... laneNumber) {
-		try {
-			if (cells.get(i).get(j).getCellType() != ROAD)
-				throw new IllegalStateException("Car must be places on the road.");
-		} catch (NullPointerException e) {
-			throw new IndexOutOfBoundsException("Cell is out of range.");
-		}
-		
 		int laneWidth = (CELL_SIZE / 2) / getCell(i, j).getLaneCount();
 		int laneOffset = 0;
 		if (laneNumber.length == 1 && laneNumber[0] > 0 && laneNumber[0] <= getCell(i, j).getLaneCount()) {
