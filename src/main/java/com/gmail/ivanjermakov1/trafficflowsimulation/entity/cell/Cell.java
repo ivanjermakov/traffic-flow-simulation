@@ -1,12 +1,11 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType;
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.RoadDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.INTERSECTION;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.ROAD;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.INTERSECTION;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.ROAD;
 import static processing.core.PConstants.CENTER;
 import static processing.core.PConstants.CORNER;
 

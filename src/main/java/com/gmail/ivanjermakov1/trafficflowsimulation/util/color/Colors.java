@@ -21,4 +21,5 @@ public enum Colors {
 	public RGBColor getColor() {
 		return color;
 	}
+	
 }

@@ -1,11 +1,12 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity;
 
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.car.Car;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection.*;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection.*;
 
 public class Simulator {
 	
@@ -33,7 +34,6 @@ public class Simulator {
 		field.draw(p);
 		cars.forEach(car -> {
 			car.checkBounds(field);
-//			car.setNextCellLocation(field);
 			car.checkRotation(field);
 			car.detectBodyObstacle(cars);
 			car.detectForwardObstacle(cars);

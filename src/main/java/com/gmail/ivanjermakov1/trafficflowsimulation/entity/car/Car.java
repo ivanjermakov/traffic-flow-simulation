@@ -1,30 +1,39 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity.car;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Field;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Rotation;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
+import com.gmail.ivanjermakov1.trafficflowsimulation.util.RangeRandom;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Vector;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.color.Colors;
 import processing.core.PApplet;
 
 import java.util.List;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.GRASS;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.ROAD;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection.STRAIGHT;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.Main.debugMode;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.GRASS;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.ROAD;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection.STRAIGHT;
 import static java.lang.Math.*;
 import static processing.core.PConstants.CENTER;
 
 public class Car {
 	
-	private static final double MAX_SPEED = 4;
-	
-	private static final int LENGTH = CELL_SIZE / 4;
-	private static final int WIDTH = CELL_SIZE / 8;
+	public static final int DEFAULT_LENGTH = CELL_SIZE / 4;
+	public static final int DEFAULT_WIDTH = CELL_SIZE / 8;
 	
 	private static final double ACCELERATION = 0.1;
 	private static final double DECELERATION = 0.4;
+	
+	private CarType carType;
+	
+	//TODO: investigate why speed cannot be less than 1 on rotations
+	private double maxSpeed;
+	private double length;
 	
 	private Colors color = Colors.getRandom();
 	
@@ -40,8 +49,6 @@ public class Car {
 	
 	private int travelled = 0;
 	
-	private Cell cell;
-	
 	private boolean isRotating = false;
 	private boolean isCompleteRotation = true;
 	private Rotation rotation;
@@ -54,10 +61,12 @@ public class Car {
 		acceleration = Vector.createVector(drivingDirection, ACCELERATION);
 		
 		direction = setDirection(drivingDirection);
-
-//		priorityTurns = Arrays.asList(LEFT, RIGHT, STRAIGHT);
-//		priorityTurns  = Arrays.asList(RIGHT, RIGHT, STRAIGHT);
-//		priorityTurns = generatePriorityTurns();
+		
+		//in range from 1 and 2
+		maxSpeed = RangeRandom.random(1, 1.5);
+		
+		carType = CarType.getRandom();
+		length = carType.getLength();
 	}
 	
 	public void draw(PApplet p) {
@@ -68,27 +77,28 @@ public class Car {
 		p.translate((int) location.getX(), (int) location.getY());
 		p.rotate((float) direction);
 		p.rectMode(CENTER);
-		p.rect(0, 0, WIDTH, LENGTH);
+		p.rect(0, 0, DEFAULT_WIDTH, (float) length);
 		p.fill(255, 0, 0, 100);
 		
 		p.popMatrix();
 		
-		//test
-		p.fill(255, 0, 0, 100);
-		p.ellipse((int) getHoodLocation(location).getX(), (int) getHoodLocation(location).getY(), LENGTH, LENGTH);
-		p.ellipse((int) getBodyLocation(location).getX(), (int) getBodyLocation(location).getY(), LENGTH, LENGTH);
-		
-		if (isRotating) {
-			p.fill(0, 0, 255);
-			p.ellipse((float) rotation.getEndLocation().getX(), (float) rotation.getEndLocation().getY(), 10, 10);
-			p.ellipse((float) rotation.getStartLocation().getX(), (float) rotation.getStartLocation().getY(), 10, 10);
-			p.fill(255, 0, 0);
-			p.ellipse((float) rotation.getAnchorLocation().getX(), (float) rotation.getAnchorLocation().getY(), 10, 10);
-			p.fill(0);
-			p.ellipse((float) location.getX(), (float) location.getY(), 10, 10);
-			p.fill(255);
-			if (rotation.getPreviousLocation() != null) {
-				p.ellipse((float) rotation.getPreviousLocation().getX(), (float) rotation.getPreviousLocation().getY(), 10, 10);
+		if (debugMode) {
+			p.fill(255, 0, 0, 100);
+			p.ellipse((int) getHoodLocation(location).getX(), (int) getHoodLocation(location).getY(), (float) length, (float) length);
+			p.ellipse((int) getBodyLocation(location).getX(), (int) getBodyLocation(location).getY(), (float) ((float) length / 1.5), (float) ((float) length / 1.5));
+			
+			if (isRotating) {
+				p.fill(0, 0, 255);
+				p.ellipse((float) rotation.getEndLocation().getX(), (float) rotation.getEndLocation().getY(), 10, 10);
+				p.ellipse((float) rotation.getStartLocation().getX(), (float) rotation.getStartLocation().getY(), 10, 10);
+				p.fill(255, 0, 0);
+				p.ellipse((float) rotation.getAnchorLocation().getX(), (float) rotation.getAnchorLocation().getY(), 10, 10);
+				p.fill(0);
+				p.ellipse((float) location.getX(), (float) location.getY(), 10, 10);
+				p.fill(255);
+				if (rotation.getPreviousLocation() != null) {
+					p.ellipse((float) rotation.getPreviousLocation().getX(), (float) rotation.getPreviousLocation().getY(), 10, 10);
+				}
 			}
 		}
 	}
@@ -101,10 +111,11 @@ public class Car {
 			if (newLocation == null) {
 				//rotation is finished
 				isRotating = false;
-				location = rotation.getEndLocation();
 				drivingDirection = rotation.getDrivingDirection();
 				direction = setDirection(drivingDirection);
+				location = rotation.getEndLocation();
 				acceleration = Vector.createVector(drivingDirection, speed.getLength());
+				speed.rotate(drivingDirection);
 				rotation = null;
 			} else {
 				location = newLocation;
@@ -140,7 +151,7 @@ public class Car {
 	public void detectSideObstacle(List<Car> cars) {
 		for (Car car : cars) {
 			if (car != this) {
-				if (Location.distance(getHoodLocation(location), getBodyLocation(car.location)) <= LENGTH) {
+				if (Location.distance(getHoodLocation(location), getBodyLocation(car.location)) <= length) {
 					isBraking = true;
 					return;
 				}
@@ -152,7 +163,7 @@ public class Car {
 	public void detectForwardObstacle(List<Car> cars) {
 		for (Car car : cars) {
 			if (car != this) {
-				if (Location.distance(getHoodLocation(location), getHoodLocation(car.location)) <= LENGTH) {
+				if (Location.distance(getHoodLocation(location), getHoodLocation(car.location)) <= length) {
 					isBraking = true;
 					return;
 				}
@@ -164,7 +175,7 @@ public class Car {
 	public void detectBodyObstacle(List<Car> cars) {
 		for (Car car : cars) {
 			if (car != this) {
-				if (Location.distance(getBodyLocation(location), getBodyLocation(car.location)) <= LENGTH) {
+				if (Location.distance(getBodyLocation(location), getBodyLocation(car.location)) <= length / 1.5) {
 					isBraking = true;
 					return;
 				}
@@ -186,7 +197,8 @@ public class Car {
 			if (rotationDirection == STRAIGHT) {
 				isCompleteRotation = false;
 				return;
-			};
+			}
+			;
 			
 			isCompleteRotation = false;
 			isRotating = true;
@@ -203,22 +215,23 @@ public class Car {
 	private void accelerate() {
 		isBraking = false;
 		speed.add(acceleration);
-		speed.limit(MAX_SPEED);
+		speed.limit(maxSpeed);
 	}
 	
 	private Location getHoodLocation(Location location) {
-		return new Location((int) location.getX() + (int) (sin(direction) * LENGTH),
-				(int) location.getY() - (int) (cos(direction) * LENGTH));
+		return new Location((int) location.getX() + (int) (sin(direction) * length),
+				(int) location.getY() - (int) (cos(direction) * length));
 	}
 	
 	private Location getBodyLocation(Location location) {
-		return new Location((int) location.getX(), (int) location.getY());
+		return new Location((int) location.getX() - (sin(direction) * length) / 2,
+				(int) location.getY() + (cos(direction) * length) / 2);
 	}
 	
 	private double setDirection(DrivingDirection drivingDirection) {
 		switch (drivingDirection) {
 			case TOP:
-				return  0;
+				return 0;
 			case RIGHT:
 				return PI / 2;
 			case DOWN:

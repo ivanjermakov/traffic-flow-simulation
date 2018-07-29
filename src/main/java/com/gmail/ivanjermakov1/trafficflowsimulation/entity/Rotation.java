@@ -1,18 +1,20 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType;
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.RotationDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
 import java.util.List;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection.*;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection.*;
 import static java.lang.Math.*;
 
 public class Rotation {
+	
+	private static final double ACCURACY = 0.5;
 	
 	private double initialTravelledDistance;
 	private double travelledDistance;
@@ -26,8 +28,8 @@ public class Rotation {
 	private Location currentLocation;
 	private Location previousLocation;
 	
-	private int startRadius;
-	private int endRadius;
+	private double startRadius;
+	private double endRadius;
 	
 	private Location anchorLocation;
 	
@@ -51,8 +53,8 @@ public class Rotation {
 						anchorLocation = new Location(endLocation.getX(), startLocation.getY());
 						break;
 				}
-				startRadius = (int) abs(anchorLocation.getX() - startLocation.getX());
-				endRadius = (int) abs(anchorLocation.getY() - endLocation.getY());
+				startRadius = abs(anchorLocation.getX() - startLocation.getX());
+				endRadius = abs(anchorLocation.getY() - endLocation.getY());
 				break;
 			case LEFT:
 			case RIGHT:
@@ -64,8 +66,8 @@ public class Rotation {
 						anchorLocation = new Location(startLocation.getX(), endLocation.getY());
 						break;
 				}
-				startRadius = (int) abs(anchorLocation.getY() - startLocation.getY());
-				endRadius = (int) abs(anchorLocation.getX() - endLocation.getX());
+				startRadius = abs(anchorLocation.getY() - startLocation.getY());
+				endRadius = abs(anchorLocation.getX() - endLocation.getX());
 				break;
 		}
 		
@@ -101,7 +103,8 @@ public class Rotation {
 		double angle = PApplet.map((float) ratio, 0, 1, 0, (float) PI / 2);
 		
 		if (previousLocation != null &&
-				!Location.closelyEquals(currentLocation, previousLocation, 0.1)) previousLocation = currentLocation;
+				!Location.closelyEquals(currentLocation, previousLocation, ACCURACY))
+			previousLocation = currentLocation;
 		
 		switch (rotationDirection) {
 			case LEFT:
@@ -144,7 +147,8 @@ public class Rotation {
 	}
 	
 	public double getNewDirection(double currentDirection) {
-		if (previousLocation == null || travelledDistance / length > 1) return currentDirection;
+		if (previousLocation == null || Location.closelyEquals(currentLocation, previousLocation, ACCURACY))
+			return currentDirection;
 		return Location.angle(currentLocation, previousLocation);
 	}
 	
@@ -259,6 +263,7 @@ public class Rotation {
 		}
 		throw new IllegalStateException();
 	}
+	
 }
 
 //r = t * r1 + (1 - t) * r2

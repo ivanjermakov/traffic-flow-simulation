@@ -1,6 +1,6 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.util;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
 
 public class Vector {
 	
@@ -55,28 +55,39 @@ public class Vector {
 		return length;
 	}
 	
-	public double getDirection() {
-		return direction;
-	}
-	
-	public void multiply(double coefficient) {
-		x *= coefficient;
-		y *= coefficient;
-		length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-	}
-	
 	public void add(Vector vector) {
 		x += vector.x;
 		y += vector.y;
 		length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
+	public void rotate(DrivingDirection drivingDirection) {
+		switch (drivingDirection) {
+			case TOP:
+				x = -length;
+				y = 0;
+				break;
+			case DOWN:
+				x = length;
+				y = 0;
+				break;
+			case LEFT:
+				x = 0;
+				y = -length;
+				break;
+			case RIGHT:
+				x = 0;
+				y = length;
+				break;
+		}
+	}
+	
 	public void limit(double limit) {
 		if (length <= limit) return;
 		
-		double k = length / limit;
-		x /= k;
-		y /= k;
+		double k = limit / length;
+		x *= k;
+		y *= k;
 		
 		length = limit;
 	}
@@ -96,5 +107,4 @@ public class Vector {
 		
 		length = newLength;
 	}
-	
 }

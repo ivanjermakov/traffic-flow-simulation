@@ -1,6 +1,7 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.type.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
+import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
@@ -9,10 +10,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.Cell.CELL_SIZE;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.CellType.*;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.HORIZONTAL;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.type.RoadDirection.VERTICAL;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.*;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RoadDirection.HORIZONTAL;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RoadDirection.VERTICAL;
 
 public class Field {
 	

@@ -1,4 +1,4 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation.type;
+package com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell;
 
 public enum CellType {
 	GRASS,

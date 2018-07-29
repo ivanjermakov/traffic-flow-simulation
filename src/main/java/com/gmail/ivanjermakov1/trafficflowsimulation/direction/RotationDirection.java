@@ -1,4 +1,6 @@
-package com.gmail.ivanjermakov1.trafficflowsimulation.type;
+package com.gmail.ivanjermakov1.trafficflowsimulation.direction;
+
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,4 +32,5 @@ public enum RotationDirection {
 		
 		return new ArrayList<>();
 	}
+	
 }
