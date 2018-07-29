@@ -1,7 +1,7 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.entity;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
 import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
@@ -10,16 +10,17 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.*;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RoadDirection.HORIZONTAL;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RoadDirection.VERTICAL;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.*;
 
 public class Field {
 	
 	private List<List<Cell>> cells;
 	private int width;
 	private int height;
+	
 	
 	public Field(int width, int height) {
 		this.width = width;
@@ -86,20 +87,6 @@ public class Field {
 					return new Location(i * CELL_SIZE + CELL_SIZE / 2,
 							j * CELL_SIZE + CELL_SIZE / 2 + laneWidth / 2 + laneOffset);
 			}
-		}
-		
-		return null;
-	}
-	
-	public Location getCellLocation(Location location) {
-		return new Location((int) location.getX() / CELL_SIZE, (int) location.getY() / CELL_SIZE);
-	}
-	
-	public static Cell getCell(List<List<Cell>> cells, int i, int j) {
-		try {
-			return cells.get(i).get(j);
-		} catch (NullPointerException e) {
-			e.printStackTrace();
 		}
 		
 		return null;

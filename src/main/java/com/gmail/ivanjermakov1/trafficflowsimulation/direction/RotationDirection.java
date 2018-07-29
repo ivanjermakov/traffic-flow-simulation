@@ -13,6 +13,7 @@ public enum RotationDirection {
 	RIGHT;
 	//TODO: include turn around
 	
+	
 	public static List<RotationDirection> generatePriorityTurns() {
 		List<RotationDirection> list = new ArrayList<>(Arrays.asList(values()));
 		Collections.shuffle(list);

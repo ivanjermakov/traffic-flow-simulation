@@ -1,15 +1,15 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.entity;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType;
 import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import processing.core.PApplet;
 
 import java.util.List;
 
-import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection.*;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
 import static java.lang.Math.*;
 
 public class Rotation {
@@ -34,6 +34,7 @@ public class Rotation {
 	private Location anchorLocation;
 	
 	private double length;
+	
 	
 	public Rotation(DrivingDirection drivingDirection, RotationDirection rotationDirection, Location startLocation, Location endLocation, double initialTravelledDistance) {
 		this.drivingDirection = drivingDirection;
@@ -265,5 +266,3 @@ public class Rotation {
 	}
 	
 }
-
-//r = t * r1 + (1 - t) * r2

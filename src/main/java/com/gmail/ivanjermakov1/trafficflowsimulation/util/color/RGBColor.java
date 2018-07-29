@@ -6,6 +6,7 @@ public class RGBColor {
 	private int green;
 	private int blue;
 	
+	
 	public RGBColor(int red, int green, int blue) {
 		this.red = red;
 		this.green = green;

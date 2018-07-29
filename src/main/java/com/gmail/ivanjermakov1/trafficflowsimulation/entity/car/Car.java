@@ -1,10 +1,10 @@
 package com.gmail.ivanjermakov1.trafficflowsimulation.entity.car;
 
-import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
-import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Field;
-import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Rotation;
 import com.gmail.ivanjermakov1.trafficflowsimulation.direction.DrivingDirection;
 import com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Field;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.Rotation;
+import com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Location;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.RangeRandom;
 import com.gmail.ivanjermakov1.trafficflowsimulation.util.Vector;
@@ -14,10 +14,10 @@ import processing.core.PApplet;
 import java.util.List;
 
 import static com.gmail.ivanjermakov1.trafficflowsimulation.Main.debugMode;
+import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection.STRAIGHT;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.Cell.CELL_SIZE;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.GRASS;
 import static com.gmail.ivanjermakov1.trafficflowsimulation.entity.cell.CellType.ROAD;
-import static com.gmail.ivanjermakov1.trafficflowsimulation.direction.RotationDirection.STRAIGHT;
 import static java.lang.Math.*;
 import static processing.core.PConstants.CENTER;
 
@@ -26,14 +26,18 @@ public class Car {
 	public static final int DEFAULT_LENGTH = CELL_SIZE / 4;
 	public static final int DEFAULT_WIDTH = CELL_SIZE / 8;
 	
+	public static final int DEFAULT_FOW = DEFAULT_LENGTH;
+	
 	private static final double ACCELERATION = 0.1;
-	private static final double DECELERATION = 0.4;
+	private static final double DECELERATION = 0.2;
 	
 	private CarType carType;
 	
 	//TODO: investigate why speed cannot be less than 1 on rotations
 	private double maxSpeed;
 	private double length;
+	private int forwardFow;
+	private int backwardFow;
 	
 	private Colors color = Colors.getRandom();
 	
@@ -62,11 +66,12 @@ public class Car {
 		
 		direction = setDirection(drivingDirection);
 		
-		//in range from 1 and 2
 		maxSpeed = RangeRandom.random(1, 1.5);
 		
 		carType = CarType.getRandom();
 		length = carType.getLength();
+		forwardFow = carType.getForwardFow();
+		backwardFow = carType.getBackwardFow();
 	}
 	
 	public void draw(PApplet p) {
@@ -83,9 +88,11 @@ public class Car {
 		p.popMatrix();
 		
 		if (debugMode) {
+			p.pushMatrix();
+			
 			p.fill(255, 0, 0, 100);
-			p.ellipse((int) getHoodLocation(location).getX(), (int) getHoodLocation(location).getY(), (float) length, (float) length);
-			p.ellipse((int) getBodyLocation(location).getX(), (int) getBodyLocation(location).getY(), (float) ((float) length / 1.5), (float) ((float) length / 1.5));
+			p.ellipse((int) getForwardLocation(location).getX(), (int) getForwardLocation(location).getY(), forwardFow, forwardFow);
+			p.ellipse((int) getBackwardLocation(location).getX(), (int) getBackwardLocation(location).getY(), backwardFow, backwardFow);
 			
 			if (isRotating) {
 				p.fill(0, 0, 255);
@@ -100,6 +107,8 @@ public class Car {
 					p.ellipse((float) rotation.getPreviousLocation().getX(), (float) rotation.getPreviousLocation().getY(), 10, 10);
 				}
 			}
+			
+			p.popMatrix();
 		}
 	}
 	
@@ -148,22 +157,11 @@ public class Car {
 		}
 	}
 	
-	public void detectSideObstacle(List<Car> cars) {
-		for (Car car : cars) {
-			if (car != this) {
-				if (Location.distance(getHoodLocation(location), getBodyLocation(car.location)) <= length) {
-					isBraking = true;
-					return;
-				}
-			}
-		}
-		isBraking = false;
-	}
-	
 	public void detectForwardObstacle(List<Car> cars) {
 		for (Car car : cars) {
 			if (car != this) {
-				if (Location.distance(getHoodLocation(location), getHoodLocation(car.location)) <= length) {
+				if (Location.distance(getForwardLocation(location), getForwardLocation(car.location)) <= forwardFow ||
+						Location.distance(getForwardLocation(location), getBackwardLocation(car.location)) <= forwardFow) {
 					isBraking = true;
 					return;
 				}
@@ -172,10 +170,11 @@ public class Car {
 		isBraking = false;
 	}
 	
-	public void detectBodyObstacle(List<Car> cars) {
+	public void detectBackwardObstacle(List<Car> cars) {
 		for (Car car : cars) {
 			if (car != this) {
-				if (Location.distance(getBodyLocation(location), getBodyLocation(car.location)) <= length / 1.5) {
+				if (Location.distance(getBackwardLocation(location), getBackwardLocation(car.location)) <= backwardFow ||
+						Location.distance(getBackwardLocation(location), getForwardLocation(car.location)) <= backwardFow) {
 					isBraking = true;
 					return;
 				}
@@ -198,7 +197,6 @@ public class Car {
 				isCompleteRotation = false;
 				return;
 			}
-			;
 			
 			isCompleteRotation = false;
 			isRotating = true;
@@ -218,12 +216,12 @@ public class Car {
 		speed.limit(maxSpeed);
 	}
 	
-	private Location getHoodLocation(Location location) {
-		return new Location((int) location.getX() + (int) (sin(direction) * length),
-				(int) location.getY() - (int) (cos(direction) * length));
+	private Location getForwardLocation(Location location) {
+		return new Location((int) location.getX() + (int) (sin(direction) * forwardFow),
+				(int) location.getY() - (int) (cos(direction) * forwardFow));
 	}
 	
-	private Location getBodyLocation(Location location) {
+	private Location getBackwardLocation(Location location) {
 		return new Location((int) location.getX() - (sin(direction) * length) / 2,
 				(int) location.getY() + (cos(direction) * length) / 2);
 	}

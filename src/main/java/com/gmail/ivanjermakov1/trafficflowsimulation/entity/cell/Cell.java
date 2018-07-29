@@ -43,14 +43,12 @@ public class Cell {
 		return laneCount;
 	}
 	
-	public Cell setCellType(CellType cellType) {
+	public void setCellType(CellType cellType) {
 		this.cellType = cellType;
-		return this;
 	}
 	
-	public Cell setRoadDirection(RoadDirection roadDirection) {
+	public void setRoadDirection(RoadDirection roadDirection) {
 		this.roadDirection = roadDirection;
-		return this;
 	}
 	
 	public void draw(PApplet p) {
@@ -99,7 +97,6 @@ public class Cell {
 		}
 		
 		p.popMatrix();
-		
 	}
 	
 }

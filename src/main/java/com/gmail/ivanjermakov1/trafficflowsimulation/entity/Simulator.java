@@ -35,9 +35,8 @@ public class Simulator {
 		cars.forEach(car -> {
 			car.checkBounds(field);
 			car.checkRotation(field);
-			car.detectBodyObstacle(cars);
+			car.detectBackwardObstacle(cars);
 			car.detectForwardObstacle(cars);
-			car.detectSideObstacle(cars);
 			car.update();
 			car.draw(p);
 		});
